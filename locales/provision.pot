@@ -1,0 +1,474 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the radio-provision package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: radio-provision 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-08 14:44+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#, python-brace-format
+msgid "--digits 必须在 {v0}..{v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "--period 必须在 {v0}..{v1} 秒"
+msgstr ""
+
+msgid "必须是整数"
+msgstr ""
+
+#, python-brace-format
+msgid "必须在 {v0}..{v1} 字节"
+msgstr ""
+
+msgid ""
+"Base32 种子（A-Z 与 2-7；可带空格与填充，写入前规范化）；缺省时生成随机种子"
+msgstr ""
+
+#, python-brace-format
+msgid "随机种子字节数 {v0}..{v1}（默认 {v2}，仅未给出种子时生效）"
+msgstr ""
+
+#, python-brace-format
+msgid "口令位数 {v0}..{v1}（默认 {v2}）"
+msgstr ""
+
+#, python-brace-format
+msgid "口令周期秒数 {v0}..{v1}（默认 {v2}）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "校准值必须在 ±{v0}（0.01 ppm）内(AI)"
+msgstr ""
+
+msgid "TOTP 点位配置工具（固定 38400 8N1）(AI)"
+msgstr ""
+
+msgid ""
+"示例：\n"
+"  provision.py -p /dev/ttyUSB0 setup\n"
+"  provision.py -p /dev/ttyUSB0 setup --period 30\n"
+"  provision.py -p /dev/ttyUSB0 set-calib -500\n"
+"(AI)"
+msgstr ""
+
+msgid "串口设备；缺省时自动探测 USB 串口（也可用 TOTP_PORT 环境变量）"
+msgstr ""
+
+msgid "打印串口收发帧（可重复）"
+msgstr ""
+
+msgid "关闭串口重传和会话重建；PING 握手仅尝试一次"
+msgstr ""
+
+msgid "命令"
+msgstr ""
+
+msgid "连通性与版本握手"
+msgstr ""
+
+msgid "读取设备 UTC 时间与可信标志"
+msgstr ""
+
+msgid "以主机 UTC 时间对时（回读误差 ≤100 ms）"
+msgstr ""
+
+msgid "读取电量/对时/复位/故障快照"
+msgstr ""
+
+msgid "读取配置元信息（不回显种子）"
+msgstr ""
+
+msgid "写入种子并读回比对（不给种子则随机生成）"
+msgstr ""
+
+msgid "删除种子并确认记录为空"
+msgstr ""
+
+msgid "写 RTC 校准（0.01 ppm，0 = 关闭；支持情况由设备响应）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "校准值，{v0}..{v1}（0.01 ppm）(AI)"
+msgstr ""
+
+msgid "写入种子、对时并通过设备命令回读核验（不给种子则随机生成）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "设备协议版本为 v{v0}，本工具只支持 v{v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "设备最大载荷 {v0} B 小于 {v1} B，无法写入最长种子"
+msgstr ""
+
+#, python-brace-format
+msgid "命令 0x{v0:02X} 响应数据 {v1} B，期望 {v2} B"
+msgstr ""
+
+msgid "设备无响应（已发送前导码与 PING，请检查接线、串口号与设备电源）"
+msgstr ""
+
+#, python-brace-format
+msgid "对时回读误差 {v0:+d} ms，超过 ±{v1} ms"
+msgstr ""
+
+#, python-brace-format
+msgid "WRITE_SLOT 回读 config_crc16=0x{v0:04X}，本地复算=0x{v1:04X}"
+msgstr ""
+
+msgid "IWDG（看门狗）"
+msgstr ""
+
+msgid "软件复位"
+msgstr ""
+
+msgid "其它"
+msgstr ""
+
+msgid "未知"
+msgstr ""
+
+msgid "正常"
+msgstr ""
+
+msgid "低电"
+msgstr ""
+
+msgid "极低"
+msgstr ""
+
+#, python-brace-format
+msgid "{v0} 秒"
+msgstr ""
+
+#, python-brace-format
+msgid "{v0} 分 {v1} 秒"
+msgstr ""
+
+#, python-brace-format
+msgid "{v0} 小时 {v1} 分"
+msgstr ""
+
+#, python-brace-format
+msgid "{v0} 天 {v1} 小时"
+msgstr ""
+
+msgid "无"
+msgstr ""
+
+msgid "READ_META 报告未写入种子"
+msgstr ""
+
+msgid "记录校验位未通过"
+msgstr ""
+
+#, python-brace-format
+msgid "algo={v0}，期望 {v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "digits={v0}，期望 {v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "period={v0}，期望 {v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "secret_len={v0}，期望 {v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "config_crc16=0x{v0:04X}，期望 0x{v1:04X}"
+msgstr ""
+
+msgid "读回配置与写入不一致："
+msgstr ""
+
+#, python-brace-format
+msgid "随机种子（Base32）：{v0}"
+msgstr ""
+
+msgid "注意：请立即记录并登记到服务器；写入后本工具不再回显种子。"
+msgstr ""
+
+#, python-brace-format
+msgid "状态位：  {v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "复位原因：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "电量：    {v0} mV（{v1}）"
+msgstr ""
+
+msgid "距上次对时：从未对时"
+msgstr ""
+
+#, python-brace-format
+msgid "距上次对时：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "协议版本：v{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "固件版本：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "最大载荷：{v0} B"
+msgstr ""
+
+#, python-brace-format
+msgid "运行时长：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "设备时间不可用：{flags}；每次上电或复位后须重新对时。"
+msgstr ""
+
+#, python-brace-format
+msgid "设备时间：{v0} UTC"
+msgstr ""
+
+#, python-brace-format
+msgid "本地时间：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "时间标志：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "与主机差值：{v0:+d} ms（粗略，含传输延迟）"
+msgstr ""
+
+#, python-brace-format
+msgid "对时完成：{v0} UTC"
+msgstr ""
+
+#, python-brace-format
+msgid "回读误差：{v0:+d} ms（容差 ±{v1} ms）"
+msgstr ""
+
+msgid "未写入种子（READ_META flags=0x00）"
+msgstr ""
+
+#, python-brace-format
+msgid "未知（algo={v0}）"
+msgstr ""
+
+#, python-brace-format
+msgid "种子：已写入，{v0} 个 Base32 字符"
+msgstr ""
+
+#, python-brace-format
+msgid "算法：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "位数：{v0}（周期 {v1} s）"
+msgstr ""
+
+msgid "警告：记录校验位未通过"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"写入并读回确认：digits={v0}，period={v1} s，种子 {v2} 字符，"
+"config_crc16=0x{v3:04X}"
+msgstr ""
+
+#, python-brace-format
+msgid "擦除后 READ_META flags=0x{v0:02X}，仍报告配置存在"
+msgstr ""
+
+msgid "已擦除：READ_META 确认配置为空"
+msgstr ""
+
+#, python-brace-format
+msgid "校准已写入并生效：{v0} ×0.01 ppm(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm（最接近档位）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "[1/4] 握手：OK（协议 v{v0}，固件 {v1}）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "[2/4] 写入 TOTP 配置：OK（config_crc16=0x{v0:04X}）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid ""
+"[3/4] READ_META 命令回读：OK（digits={v0}，period={v1} s，种子 {v2} 字符，"
+"CRC 一致）(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "[4/4] 对时命令回读：OK（误差 {v0:+d} ms）(AI)"
+msgstr ""
+
+msgid "配置完成。(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "设备返回 {v0}（命令 0x{v1:02X}）"
+msgstr ""
+
+msgid "cmd 超出单字节范围"
+msgstr ""
+
+msgid "seq 超出单字节范围"
+msgstr ""
+
+msgid "payload 超出单字节 LEN 范围"
+msgstr ""
+
+#, python-brace-format
+msgid "payload {v0} B 超过协议上限 {v1} B"
+msgstr ""
+
+msgid "不是响应帧"
+msgstr ""
+
+msgid "响应帧缺少状态字节"
+msgstr ""
+
+msgid "u64 超出范围"
+msgstr ""
+
+msgid "i16 超出范围"
+msgstr ""
+
+msgid "algo 只支持 1 (HMAC-SHA1)"
+msgstr ""
+
+#, python-brace-format
+msgid "digits 必须在 {v0}..{v1}(AI)"
+msgstr ""
+
+#, python-brace-format
+msgid "period 必须在 {v0}..{v1} 秒"
+msgstr ""
+
+msgid "secret 必须是 1..56 个 A-Z2-7 字符（Base32，无填充）"
+msgstr ""
+
+#, python-brace-format
+msgid "cal_centi_ppm 超出 ±{v0}"
+msgstr ""
+
+msgid "未发现 USB 串口：请用 --port 指定设备，或设置 TOTP_PORT 环境变量"
+msgstr ""
+
+#, python-brace-format
+msgid "{v0}（无响应）"
+msgstr ""
+
+#, python-brace-format
+msgid "已自动选择串口：{v0}"
+msgstr ""
+
+msgid "自动探测失败："
+msgstr ""
+
+msgid "（请用 --port 指定）"
+msgstr ""
+
+#, python-brace-format
+msgid "[调试] {v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "错误：{v0}"
+msgstr ""
+
+msgid "已中断"
+msgstr ""
+
+msgid "缺少 pyserial，请先安装：python3 -m pip install pyserial"
+msgstr ""
+
+#, python-brace-format
+msgid "无法打开串口 {v0}：{v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "发送唤醒前导码（{v0}）+ {v1:.0f} ms 静默"
+msgstr ""
+
+#, python-brace-format
+msgid "发送：WRITE_SLOT seq={v0}（种子载荷及 CRC 已隐藏）"
+msgstr ""
+
+#, python-brace-format
+msgid "发送：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "收到：{v0}"
+msgstr ""
+
+#, python-brace-format
+msgid "忽略不匹配帧：cmd=0x{v0:02X} seq={v1}"
+msgstr ""
+
+#, python-brace-format
+msgid "单次命令 0x{v0:02X}（seq={v1}）未收到响应"
+msgstr ""
+
+msgid "命令连续无响应，重新建立会话"
+msgstr ""
+
+msgid "设备无响应（已重发前导码与 PING，请检查接线、串口号与设备电源）"
+msgstr ""
+
+#, python-brace-format
+msgid "命令 0x{v0:02X}（seq={v1}）重传后仍无响应"
+msgstr ""
+
+#, python-brace-format
+msgid "随机种子字节数必须在 {v0}..{v1}"
+msgstr ""
+
+msgid "种子为空"
+msgstr ""
+
+#, python-brace-format
+msgid "种子 {v0} 个字符，超过协议上限 {v1}"
+msgstr ""
+
+msgid "种子含非法字符 {v0!r}（只允许 A-Z 与 2-7）"
+msgstr ""
+
+msgid "种子不是规范 Base32（末尾字符填充位非零）"
+msgstr ""
+
+msgid "种子过短，解不出任何字节"
+msgstr ""
+
+#, python-brace-format
+msgid "digits 必须在 {v0}..{v1}"
+msgstr ""
