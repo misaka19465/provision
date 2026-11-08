@@ -206,31 +206,48 @@ def cmd_set_calib(device: Device, args: argparse.Namespace) -> int:
     _connect(device)
     applied = device.set_calib(args.centi_ppm)
     if applied == args.centi_ppm:
-        print(tr("校准已写入并生效：{v0} ×0.01 ppm(AI)").format(v0=applied))
+        print(tr("校准已写入并生效：{v0} ×0.01 ppm").format(v0=applied))
     else:
-        print(tr("校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm（最接近档位）(AI)")
+        print(tr("校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm（最接近档位）")
               .format(v0=args.centi_ppm, v1=applied))
+    return 0
+
+
+def cmd_get_cw(device: Device, args: argparse.Namespace) -> int:
+    """读取独立 CW 扩展参数；不支持时由设备错误或超时报告失败。"""
+    _connect(device)
+    config = device.get_cw()
+    print(tr("CW 配置：WPM={wpm}，TONE={tone} Hz").format(wpm=config.wpm, tone=config.tone_hz))
+    return 0
+
+
+def cmd_set_cw(device: Device, args: argparse.Namespace) -> int:
+    """保存至少一项 CW 参数并展示核验后的当前值，成功返回 0。"""
+    _connect(device)
+    config = device.set_cw(wpm=args.wpm, tone_hz=args.tone_hz)
+    print(tr("CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz").format(
+        wpm=config.wpm, tone=config.tone_hz))
     return 0
 
 
 def cmd_setup(device: Device, args: argparse.Namespace) -> int:
     """写入已校验的配置并用设备命令回读核验，成功返回 0。"""
     info = _connect(device)
-    print(tr("[1/4] 握手：OK（协议 v{v0}，固件 {v1}）(AI)").format(v0=info.proto_ver, v1=info.fw_version))
+    print(tr("[1/4] 握手：OK（协议 v{v0}，固件 {v1}）").format(v0=info.proto_ver, v1=info.fw_version))
 
     if args.seed_generated:
         _print_generated_seed(args.secret)
     crc = device.write_slot(secret=args.secret, digits=args.digits, period=args.period)
-    print(tr("[2/4] 写入 TOTP 配置：OK（config_crc16=0x{v0:04X}）(AI)").format(v0=crc))
+    print(tr("[2/4] 写入 TOTP 配置：OK（config_crc16=0x{v0:04X}）").format(v0=crc))
 
     meta = device.read_meta()
     _assert_meta_matches(meta, secret=args.secret, digits=args.digits, period=args.period)
-    print(tr("[3/4] READ_META 命令回读：OK（digits={v0}，period={v1} s，种子 {v2} 字符，CRC 一致）(AI)")
+    print(tr("[3/4] READ_META 命令回读：OK（digits={v0}，period={v1} s，种子 {v2} 字符，CRC 一致）")
           .format(v0=meta.digits, v1=meta.period, v2=meta.secret_len))
 
     sent_ms, readback_ms = device.set_time()
-    print(tr("[4/4] 对时命令回读：OK（误差 {v0:+d} ms）(AI)").format(v0=readback_ms - sent_ms))
+    print(tr("[4/4] 对时命令回读：OK（误差 {v0:+d} ms）").format(v0=readback_ms - sent_ms))
 
     _print_status(device.status())
-    print(tr("配置完成。(AI)"))
+    print(tr("配置完成。"))
     return 0

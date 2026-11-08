@@ -70,6 +70,8 @@ class FakeDevice:
         self.period = 60
         self.secret = ""
         self.calib_centi_ppm = 0
+        self.cw_wpm = protocol.CW_DEFAULT_WPM
+        self.cw_tone_hz = protocol.CW_DEFAULT_TONE_HZ
 
         self.silent = False
         self.drop_frames = 0
@@ -157,6 +159,11 @@ class FakeDevice:
         if request.cmd == protocol.Cmd.SET_CALIB:
             self.calib_centi_ppm = struct.unpack_from("<h", request.payload)[0]
             return struct.pack("<h", self.calib_centi_ppm)
+        if request.cmd == protocol.Cmd.SET_CW:
+            self.cw_wpm, self.cw_tone_hz = struct.unpack("<BH", request.payload)
+            return struct.pack("<BH", self.cw_wpm, self.cw_tone_hz)
+        if request.cmd == protocol.Cmd.GET_CW:
+            return struct.pack("<BH", self.cw_wpm, self.cw_tone_hz)
         raise AssertionError(f"仿真设备未实现命令 0x{request.cmd:02X}")
 
     def _crc(self) -> int:

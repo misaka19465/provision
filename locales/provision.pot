@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: radio-provision 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 14:44+0800\n"
+"POT-Creation-Date: 2026-11-08 19:00+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,14 +45,14 @@ msgid "口令位数 {v0}..{v1}（默认 {v2}）"
 msgstr ""
 
 #, python-brace-format
-msgid "口令周期秒数 {v0}..{v1}（默认 {v2}）(AI)"
+msgid "口令周期秒数 {v0}..{v1}（默认 {v2}）"
 msgstr ""
 
 #, python-brace-format
-msgid "校准值必须在 ±{v0}（0.01 ppm）内(AI)"
+msgid "校准值必须在 ±{v0}（0.01 ppm）内"
 msgstr ""
 
-msgid "TOTP 点位配置工具（固定 38400 8N1）(AI)"
+msgid "TOTP 点位配置工具（固定 38400 8N1）"
 msgstr ""
 
 msgid ""
@@ -60,7 +60,6 @@ msgid ""
 "  provision.py -p /dev/ttyUSB0 setup\n"
 "  provision.py -p /dev/ttyUSB0 setup --period 30\n"
 "  provision.py -p /dev/ttyUSB0 set-calib -500\n"
-"(AI)"
 msgstr ""
 
 msgid "串口设备；缺省时自动探测 USB 串口（也可用 TOTP_PORT 环境变量）"
@@ -96,14 +95,28 @@ msgstr ""
 msgid "删除种子并确认记录为空"
 msgstr ""
 
-msgid "写 RTC 校准（0.01 ppm，0 = 关闭；支持情况由设备响应）(AI)"
+msgid "写 RTC 校准（0.01 ppm，0 = 关闭；支持情况由设备响应）"
 msgstr ""
 
 #, python-brace-format
-msgid "校准值，{v0}..{v1}（0.01 ppm）(AI)"
+msgid "校准值，{v0}..{v1}（0.01 ppm）"
 msgstr ""
 
-msgid "写入种子、对时并通过设备命令回读核验（不给种子则随机生成）(AI)"
+msgid "读取可选 CW 播放参数（WPM / TONE）"
+msgstr ""
+
+msgid "保存可选 CW 播放参数，未指定的项保留当前值"
+msgstr ""
+
+#, python-brace-format
+msgid "码速 {min}..{max} WPM，未配置时默认 {default}"
+msgstr ""
+
+#, python-brace-format
+msgid "音调 {min}..{max} Hz，未配置时默认 {default}"
+msgstr ""
+
+msgid "写入种子、对时并通过设备命令回读核验（不给种子则随机生成）"
 msgstr ""
 
 #, python-brace-format
@@ -127,6 +140,12 @@ msgstr ""
 
 #, python-brace-format
 msgid "WRITE_SLOT 回读 config_crc16=0x{v0:04X}，本地复算=0x{v1:04X}"
+msgstr ""
+
+msgid "设备返回的 CW 参数超出支持范围"
+msgstr ""
+
+msgid "SET_CW 回读的 WPM / TONE 与请求不一致"
 msgstr ""
 
 msgid "IWDG（看门狗）"
@@ -304,33 +323,40 @@ msgid "已擦除：READ_META 确认配置为空"
 msgstr ""
 
 #, python-brace-format
-msgid "校准已写入并生效：{v0} ×0.01 ppm(AI)"
+msgid "校准已写入并生效：{v0} ×0.01 ppm"
 msgstr ""
 
 #, python-brace-format
-msgid ""
-"校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm（最接近档位）(AI)"
+msgid "校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm（最接近档位）"
 msgstr ""
 
 #, python-brace-format
-msgid "[1/4] 握手：OK（协议 v{v0}，固件 {v1}）(AI)"
+msgid "CW 配置：WPM={wpm}，TONE={tone} Hz"
 msgstr ""
 
 #, python-brace-format
-msgid "[2/4] 写入 TOTP 配置：OK（config_crc16=0x{v0:04X}）(AI)"
+msgid "CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz"
+msgstr ""
+
+#, python-brace-format
+msgid "[1/4] 握手：OK（协议 v{v0}，固件 {v1}）"
+msgstr ""
+
+#, python-brace-format
+msgid "[2/4] 写入 TOTP 配置：OK（config_crc16=0x{v0:04X}）"
 msgstr ""
 
 #, python-brace-format
 msgid ""
 "[3/4] READ_META 命令回读：OK（digits={v0}，period={v1} s，种子 {v2} 字符，"
-"CRC 一致）(AI)"
+"CRC 一致）"
 msgstr ""
 
 #, python-brace-format
-msgid "[4/4] 对时命令回读：OK（误差 {v0:+d} ms）(AI)"
+msgid "[4/4] 对时命令回读：OK（误差 {v0:+d} ms）"
 msgstr ""
 
-msgid "配置完成。(AI)"
+msgid "配置完成。"
 msgstr ""
 
 #, python-brace-format
@@ -366,7 +392,7 @@ msgid "algo 只支持 1 (HMAC-SHA1)"
 msgstr ""
 
 #, python-brace-format
-msgid "digits 必须在 {v0}..{v1}(AI)"
+msgid "digits 必须在 {v0}..{v1}"
 msgstr ""
 
 #, python-brace-format
@@ -378,6 +404,17 @@ msgstr ""
 
 #, python-brace-format
 msgid "cal_centi_ppm 超出 ±{v0}"
+msgstr ""
+
+msgid "至少指定 --wpm 或 --tone 中的一项"
+msgstr ""
+
+#, python-brace-format
+msgid "WPM 必须在 {min}..{max}"
+msgstr ""
+
+#, python-brace-format
+msgid "TONE 必须在 {min}..{max} Hz"
 msgstr ""
 
 msgid "未发现 USB 串口：请用 --port 指定设备，或设置 TOTP_PORT 环境变量"
@@ -467,8 +504,4 @@ msgid "种子不是规范 Base32（末尾字符填充位非零）"
 msgstr ""
 
 msgid "种子过短，解不出任何字节"
-msgstr ""
-
-#, python-brace-format
-msgid "digits 必须在 {v0}..{v1}"
 msgstr ""

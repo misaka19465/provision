@@ -29,6 +29,13 @@ BASE32_ALPHABET = frozenset(string.ascii_uppercase + "234567")
 
 CAL_CENTI_PPM_MAX = 30000
 
+CW_DEFAULT_WPM = 8
+CW_DEFAULT_TONE_HZ = 700
+CW_WPM_MIN = 5
+CW_WPM_MAX = 60
+CW_TONE_MIN_HZ = 300
+CW_TONE_MAX_HZ = 1200
+
 
 class Cmd(enum.IntEnum):
     PING = 0x01
@@ -39,6 +46,8 @@ class Cmd(enum.IntEnum):
     READ_META = 0x06
     ERASE_SLOT = 0x07
     SET_CALIB = 0x08
+    GET_CW = 0x09
+    SET_CW = 0x0A
 
 
 class Status(enum.IntEnum):
@@ -220,7 +229,7 @@ def write_slot(
     if algo != ALGO_SHA1:
         raise ValueError(tr("algo 只支持 1 (HMAC-SHA1)"))
     if not DIGITS_MIN <= digits <= DIGITS_MAX:
-        raise ValueError(tr("digits 必须在 {v0}..{v1}(AI)").format(v0=DIGITS_MIN, v1=DIGITS_MAX))
+        raise ValueError(tr("digits 必须在 {v0}..{v1}").format(v0=DIGITS_MIN, v1=DIGITS_MAX))
     if not PERIOD_MIN <= period <= PERIOD_MAX:
         raise ValueError(tr("period 必须在 {v0}..{v1} 秒").format(v0=PERIOD_MIN, v1=PERIOD_MAX))
     if not 1 <= len(secret) <= MAX_SECRET_CHARS or any(c not in BASE32_ALPHABET for c in secret):
@@ -246,6 +255,28 @@ def set_calib(seq: int = 0, *, cal_centi_ppm: int) -> Frame:
     if not -CAL_CENTI_PPM_MAX <= cal_centi_ppm <= CAL_CENTI_PPM_MAX:
         raise ValueError(tr("cal_centi_ppm 超出 ±{v0}").format(v0=CAL_CENTI_PPM_MAX))
     return Frame(Cmd.SET_CALIB, seq, _pack_i16(cal_centi_ppm))
+
+
+def get_cw(seq: int = 0) -> Frame:
+    """读取可选 CW 扩展的当前 WPM 和音调；数显设备不支持。"""
+    return Frame(Cmd.GET_CW, seq)
+
+
+def validate_cw(*, wpm: int | None, tone_hz: int | None) -> None:
+    """校验至少一项 CW 参数的范围；None 表示保留设备当前值。"""
+    if wpm is None and tone_hz is None:
+        raise ValueError(tr("至少指定 --wpm 或 --tone 中的一项"))
+    if wpm is not None and not CW_WPM_MIN <= wpm <= CW_WPM_MAX:
+        raise ValueError(tr("WPM 必须在 {min}..{max}").format(min=CW_WPM_MIN, max=CW_WPM_MAX))
+    if tone_hz is not None and not CW_TONE_MIN_HZ <= tone_hz <= CW_TONE_MAX_HZ:
+        raise ValueError(tr("TONE 必须在 {min}..{max} Hz").format(
+            min=CW_TONE_MIN_HZ, max=CW_TONE_MAX_HZ))
+
+
+def set_cw(seq: int = 0, *, wpm: int, tone_hz: int) -> Frame:
+    """构造独立 SET_CW 扩展请求；不改变种子载荷或配置 CRC。"""
+    validate_cw(wpm=wpm, tone_hz=tone_hz)
+    return Frame(Cmd.SET_CW, seq, struct.pack("<BH", wpm, tone_hz))
 
 
 def config_crc16(*, algo: int, digits: int, period: int, secret: str) -> int:

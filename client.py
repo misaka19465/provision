@@ -24,6 +24,7 @@ SET_TIME_DATA_LEN = 8
 STATUS_DATA_LEN = 10
 META_DATA_LEN = 8
 CALIB_DATA_LEN = 2
+CW_DATA_LEN = 3
 MIN_MAX_PAYLOAD = 61
 SEED_PRESENT_BIT = 1 << 0
 RECORD_VALID_BIT = 1 << 1
@@ -115,6 +116,14 @@ class Meta:
     @property
     def record_valid(self) -> bool:
         return bool(self.flags & RECORD_VALID_BIT)
+
+
+@dataclasses.dataclass(frozen=True)
+class CwConfig:
+    """可选 GET_CW / SET_CW 扩展的当前生效参数。"""
+
+    wpm: int
+    tone_hz: int
 
 
 def check_compatible(info: DeviceInfo) -> None:
@@ -288,4 +297,32 @@ class Device:
         data = self._request_ok(frame, storage=True)
         _require_len(protocol.Cmd.SET_CALIB, data, CALIB_DATA_LEN)
         return _i16(data)
+
+    @staticmethod
+    def _parse_cw(cmd: protocol.Cmd, data: bytes) -> CwConfig:
+        _require_len(cmd, data, CW_DATA_LEN)
+        config = CwConfig(wpm=data[0], tone_hz=_u16(data[1:3]))
+        try:
+            protocol.validate_cw(wpm=config.wpm, tone_hz=config.tone_hz)
+        except ValueError as exc:
+            raise ProtocolError(tr("设备返回的 CW 参数超出支持范围")) from exc
+        return config
+
+    def get_cw(self) -> CwConfig:
+        """读取当前 CW 参数；默认流程不调用，不支持的设备直接报告命令错误。"""
+        frame = protocol.get_cw(self._session.next_seq())
+        return self._parse_cw(protocol.Cmd.GET_CW, self._request_ok(frame))
+
+    def set_cw(self, *, wpm: int | None = None, tone_hz: int | None = None) -> CwConfig:
+        """持久化并核验 CW 参数；省略的一项先通过 GET_CW 读取并保留。"""
+        protocol.validate_cw(wpm=wpm, tone_hz=tone_hz)
+        if wpm is None or tone_hz is None:
+            current = self.get_cw()
+            wpm = current.wpm if wpm is None else wpm
+            tone_hz = current.tone_hz if tone_hz is None else tone_hz
+        frame = protocol.set_cw(self._session.next_seq(), wpm=wpm, tone_hz=tone_hz)
+        applied = self._parse_cw(protocol.Cmd.SET_CW, self._request_ok(frame, storage=True))
+        if applied != CwConfig(wpm=wpm, tone_hz=tone_hz):
+            raise VerificationError(tr("SET_CW 回读的 WPM / TONE 与请求不一致"))
+        return applied
 

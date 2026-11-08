@@ -28,6 +28,18 @@ python3 -m venv .venv
 
 `--port` 放在子命令前。省略种子时工具会生成并在写入前打印随机种子；写入后不会再回显。`--no-retry` 可用于只尝试一次握手。
 
+## 可选 CW 配置
+
+UV-K5 的 WPM / TONE 使用独立扩展命令，不要求配置；未配置时仍为 **8 WPM、700 Hz**。普通 `setup` 不发送扩展，也不会覆盖已经保存的播放参数。数显 `totp/` 设备返回 `ERR_UNSUPPORTED`。
+
+```bash
+.venv/bin/python provision.py --port /dev/ttyUSB0 get-cw
+.venv/bin/python provision.py --port /dev/ttyUSB0 set-cw --wpm 12 --tone 900
+.venv/bin/python provision.py --port /dev/ttyUSB0 set-cw --tone 700
+```
+
+WPM 支持 5–60，TONE 支持 300–1200 Hz。至少指定一项，未指定的一项保留当前值。配置在设备重启后保留；码速不能导致已保存的 TOTP 周期无法容纳完整 CW 帧。协议字段、错误语义和测试向量见 [可选 CW 播放配置扩展](docs/cw-protocol.md)。
+
 ## 测试
 
 ```bash

@@ -61,7 +61,7 @@ def _add_seed_arguments(parser: argparse.ArgumentParser) -> None:
         "--period",
         type=int,
         default=protocol.DEFAULT_PERIOD,
-        help=tr("口令周期秒数 {v0}..{v1}（默认 {v2}）(AI)").format(
+        help=tr("口令周期秒数 {v0}..{v1}（默认 {v2}）").format(
             v0=protocol.PERIOD_MIN, v1=protocol.PERIOD_MAX, v2=protocol.DEFAULT_PERIOD),
     )
 
@@ -69,15 +69,19 @@ def _add_seed_arguments(parser: argparse.ArgumentParser) -> None:
 def _validate_set_calib(args: argparse.Namespace) -> None:
     limit = protocol.CAL_CENTI_PPM_MAX
     if not -limit <= args.centi_ppm <= limit:
-        raise ValueError(tr("校准值必须在 ±{v0}（0.01 ppm）内(AI)").format(v0=limit))
+        raise ValueError(tr("校准值必须在 ±{v0}（0.01 ppm）内").format(v0=limit))
+
+
+def _validate_set_cw(args: argparse.Namespace) -> None:
+    protocol.validate_cw(wpm=args.wpm, tone_hz=args.tone_hz)
 
 
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="provision.py",
-        description=tr("TOTP 点位配置工具（固定 38400 8N1）(AI)"),
+        description=tr("TOTP 点位配置工具（固定 38400 8N1）"),
         epilog=(
-            tr("示例：\n  provision.py -p /dev/ttyUSB0 setup\n  provision.py -p /dev/ttyUSB0 setup --period 30\n  provision.py -p /dev/ttyUSB0 set-calib -500\n(AI)")
+            tr("示例：\n  provision.py -p /dev/ttyUSB0 setup\n  provision.py -p /dev/ttyUSB0 setup --period 30\n  provision.py -p /dev/ttyUSB0 set-calib -500\n")
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -114,17 +118,31 @@ def _build_parser() -> argparse.ArgumentParser:
     erase = sub.add_parser("erase", help=tr("删除种子并确认记录为空"))
     erase.set_defaults(handler=commands.cmd_erase)
 
-    calib = sub.add_parser("set-calib", help=tr("写 RTC 校准（0.01 ppm，0 = 关闭；支持情况由设备响应）(AI)"))
+    calib = sub.add_parser("set-calib", help=tr("写 RTC 校准（0.01 ppm，0 = 关闭；支持情况由设备响应）"))
     calib.add_argument(
         "centi_ppm",
         type=int,
-        help=tr("校准值，{v0}..{v1}（0.01 ppm）(AI)").format(
+        help=tr("校准值，{v0}..{v1}（0.01 ppm）").format(
             v0=-protocol.CAL_CENTI_PPM_MAX, v1=protocol.CAL_CENTI_PPM_MAX),
     )
     calib.set_defaults(handler=commands.cmd_set_calib, validate=_validate_set_calib)
 
+    get_cw = sub.add_parser("get-cw", help=tr("读取可选 CW 播放参数（WPM / TONE）"))
+    get_cw.set_defaults(handler=commands.cmd_get_cw)
+
+    set_cw = sub.add_parser("set-cw", help=tr("保存可选 CW 播放参数，未指定的项保留当前值"))
+    set_cw.add_argument("--wpm", type=int, metavar="N",
+                        help=tr("码速 {min}..{max} WPM，未配置时默认 {default}").format(
+                            min=protocol.CW_WPM_MIN, max=protocol.CW_WPM_MAX,
+                            default=protocol.CW_DEFAULT_WPM))
+    set_cw.add_argument("--tone", dest="tone_hz", type=int, metavar="HZ",
+                        help=tr("音调 {min}..{max} Hz，未配置时默认 {default}").format(
+                            min=protocol.CW_TONE_MIN_HZ, max=protocol.CW_TONE_MAX_HZ,
+                            default=protocol.CW_DEFAULT_TONE_HZ))
+    set_cw.set_defaults(handler=commands.cmd_set_cw, validate=_validate_set_cw)
+
     setup = sub.add_parser(
-        "setup", help=tr("写入种子、对时并通过设备命令回读核验（不给种子则随机生成）(AI)")
+        "setup", help=tr("写入种子、对时并通过设备命令回读核验（不给种子则随机生成）")
     )
     _add_seed_arguments(setup)
     setup.set_defaults(handler=commands.cmd_setup, validate=_validate_write_seed)
