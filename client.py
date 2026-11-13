@@ -24,7 +24,7 @@ SET_TIME_DATA_LEN = 8
 STATUS_DATA_LEN = 10
 META_DATA_LEN = 8
 CALIB_DATA_LEN = 2
-CW_DATA_LEN = 3
+CW_DATA_LEN = 5
 MIN_MAX_PAYLOAD = 61
 SEED_PRESENT_BIT = 1 << 0
 RECORD_VALID_BIT = 1 << 1
@@ -124,6 +124,8 @@ class CwConfig:
 
     wpm: int
     tone_hz: int
+    dash_dits: int
+    char_space_dits: int
 
 
 def check_compatible(info: DeviceInfo) -> None:
@@ -301,9 +303,10 @@ class Device:
     @staticmethod
     def _parse_cw(cmd: protocol.Cmd, data: bytes) -> CwConfig:
         _require_len(cmd, data, CW_DATA_LEN)
-        config = CwConfig(wpm=data[0], tone_hz=_u16(data[1:3]))
+        config = CwConfig(*struct.unpack("<BHBB", data))
         try:
-            protocol.validate_cw(wpm=config.wpm, tone_hz=config.tone_hz)
+            protocol.validate_cw(wpm=config.wpm, tone_hz=config.tone_hz,
+                                 dash_dits=config.dash_dits, char_space_dits=config.char_space_dits)
         except ValueError as exc:
             raise ProtocolError(tr("设备返回的 CW 参数超出支持范围")) from exc
         return config
@@ -313,16 +316,21 @@ class Device:
         frame = protocol.get_cw(self._session.next_seq())
         return self._parse_cw(protocol.Cmd.GET_CW, self._request_ok(frame))
 
-    def set_cw(self, *, wpm: int | None = None, tone_hz: int | None = None) -> CwConfig:
-        """持久化并核验 CW 参数；省略的一项先通过 GET_CW 读取并保留。"""
-        protocol.validate_cw(wpm=wpm, tone_hz=tone_hz)
-        if wpm is None or tone_hz is None:
+    def set_cw(self, *, wpm: int | None = None, tone_hz: int | None = None,
+               dash_dits: int | None = None, char_space_dits: int | None = None) -> CwConfig:
+        """持久化并核验 CW 参数；省略项先通过 GET_CW 读取并保留，时序为整数 dit。"""
+        protocol.validate_cw(wpm=wpm, tone_hz=tone_hz,
+                             dash_dits=dash_dits, char_space_dits=char_space_dits)
+        if any(value is None for value in (wpm, tone_hz, dash_dits, char_space_dits)):
             current = self.get_cw()
             wpm = current.wpm if wpm is None else wpm
             tone_hz = current.tone_hz if tone_hz is None else tone_hz
-        frame = protocol.set_cw(self._session.next_seq(), wpm=wpm, tone_hz=tone_hz)
+            dash_dits = current.dash_dits if dash_dits is None else dash_dits
+            char_space_dits = current.char_space_dits if char_space_dits is None else char_space_dits
+        frame = protocol.set_cw(self._session.next_seq(), wpm=wpm, tone_hz=tone_hz,
+                                dash_dits=dash_dits, char_space_dits=char_space_dits)
         applied = self._parse_cw(protocol.Cmd.SET_CW, self._request_ok(frame, storage=True))
-        if applied != CwConfig(wpm=wpm, tone_hz=tone_hz):
-            raise VerificationError(tr("SET_CW 回读的 WPM / TONE 与请求不一致"))
+        if applied != CwConfig(wpm, tone_hz, dash_dits, char_space_dits):
+            raise VerificationError(tr("SET_CW 回读的 CW 参数与请求不一致"))
         return applied
 

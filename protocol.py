@@ -31,10 +31,16 @@ CAL_CENTI_PPM_MAX = 30000
 
 CW_DEFAULT_WPM = 8
 CW_DEFAULT_TONE_HZ = 700
+CW_DEFAULT_DASH_DITS = 3
+CW_DEFAULT_CHAR_SPACE_DITS = 3
 CW_WPM_MIN = 5
 CW_WPM_MAX = 60
 CW_TONE_MIN_HZ = 300
 CW_TONE_MAX_HZ = 1200
+CW_DASH_MIN_DITS = 1
+CW_DASH_MAX_DITS = 255
+CW_CHAR_SPACE_MIN_DITS = 1
+CW_CHAR_SPACE_MAX_DITS = 255
 
 
 class Cmd(enum.IntEnum):
@@ -258,25 +264,35 @@ def set_calib(seq: int = 0, *, cal_centi_ppm: int) -> Frame:
 
 
 def get_cw(seq: int = 0) -> Frame:
-    """读取可选 CW 扩展的当前 WPM 和音调；数显设备不支持。"""
+    """读取完整 CW 播放参数；数显设备不支持。"""
     return Frame(Cmd.GET_CW, seq)
 
 
-def validate_cw(*, wpm: int | None, tone_hz: int | None) -> None:
+def validate_cw(*, wpm: int | None = None, tone_hz: int | None = None,
+                dash_dits: int | None = None, char_space_dits: int | None = None) -> None:
     """校验至少一项 CW 参数的范围；None 表示保留设备当前值。"""
-    if wpm is None and tone_hz is None:
-        raise ValueError(tr("至少指定 --wpm 或 --tone 中的一项"))
-    if wpm is not None and not CW_WPM_MIN <= wpm <= CW_WPM_MAX:
+    if all(value is None for value in (wpm, tone_hz, dash_dits, char_space_dits)):
+        raise ValueError(tr("至少指定 --wpm、--tone、--dash 或 --character-space 中的一项"))
+    if wpm is not None and (type(wpm) is not int or not CW_WPM_MIN <= wpm <= CW_WPM_MAX):
         raise ValueError(tr("WPM 必须在 {min}..{max}").format(min=CW_WPM_MIN, max=CW_WPM_MAX))
-    if tone_hz is not None and not CW_TONE_MIN_HZ <= tone_hz <= CW_TONE_MAX_HZ:
+    if tone_hz is not None and (type(tone_hz) is not int or not CW_TONE_MIN_HZ <= tone_hz <= CW_TONE_MAX_HZ):
         raise ValueError(tr("TONE 必须在 {min}..{max} Hz").format(
             min=CW_TONE_MIN_HZ, max=CW_TONE_MAX_HZ))
+    if dash_dits is not None and (type(dash_dits) is not int or
+                                 not CW_DASH_MIN_DITS <= dash_dits <= CW_DASH_MAX_DITS):
+        raise ValueError(tr("DASH 必须是 {min}..{max} dit 的整数").format(
+            min=CW_DASH_MIN_DITS, max=CW_DASH_MAX_DITS))
+    if char_space_dits is not None and (type(char_space_dits) is not int or
+                                       not CW_CHAR_SPACE_MIN_DITS <= char_space_dits <= CW_CHAR_SPACE_MAX_DITS):
+        raise ValueError(tr("Character Space 必须是 {min}..{max} dit 的整数").format(
+            min=CW_CHAR_SPACE_MIN_DITS, max=CW_CHAR_SPACE_MAX_DITS))
 
 
-def set_cw(seq: int = 0, *, wpm: int, tone_hz: int) -> Frame:
-    """构造独立 SET_CW 扩展请求；不改变种子载荷或配置 CRC。"""
-    validate_cw(wpm=wpm, tone_hz=tone_hz)
-    return Frame(Cmd.SET_CW, seq, struct.pack("<BH", wpm, tone_hz))
+def set_cw(seq: int = 0, *, wpm: int, tone_hz: int,
+           dash_dits: int, char_space_dits: int) -> Frame:
+    """构造五字节 SET_CW 完整请求；调用方须填齐要保留的当前值，不改变种子 CRC。"""
+    validate_cw(wpm=wpm, tone_hz=tone_hz, dash_dits=dash_dits, char_space_dits=char_space_dits)
+    return Frame(Cmd.SET_CW, seq, struct.pack("<BHBB", wpm, tone_hz, dash_dits, char_space_dits))
 
 
 def config_crc16(*, algo: int, digits: int, period: int, secret: str) -> int:

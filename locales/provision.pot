@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: radio-provision 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-08 19:00+0800\n"
+"POT-Creation-Date: 2026-11-09 10:24+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -102,7 +102,7 @@ msgstr ""
 msgid "校准值，{v0}..{v1}（0.01 ppm）"
 msgstr ""
 
-msgid "读取可选 CW 播放参数（WPM / TONE）"
+msgid "读取可选 CW 播放参数（WPM / TONE / DASH / Character Space）"
 msgstr ""
 
 msgid "保存可选 CW 播放参数，未指定的项保留当前值"
@@ -114,6 +114,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "音调 {min}..{max} Hz，未配置时默认 {default}"
+msgstr ""
+
+#, python-brace-format
+msgid "划时长 {min}..{max} dit（整数），未配置时默认 {default}"
+msgstr ""
+
+#, python-brace-format
+msgid "字符间隔 {min}..{max} dit（整数），未配置时默认 {default}"
 msgstr ""
 
 msgid "写入种子、对时并通过设备命令回读核验（不给种子则随机生成）"
@@ -145,7 +153,7 @@ msgstr ""
 msgid "设备返回的 CW 参数超出支持范围"
 msgstr ""
 
-msgid "SET_CW 回读的 WPM / TONE 与请求不一致"
+msgid "SET_CW 回读的 CW 参数与请求不一致"
 msgstr ""
 
 msgid "IWDG（看门狗）"
@@ -331,11 +339,15 @@ msgid "校准已写入：请求 {v0} ×0.01 ppm，实际生效 {v1} ×0.01 ppm�
 msgstr ""
 
 #, python-brace-format
-msgid "CW 配置：WPM={wpm}，TONE={tone} Hz"
+msgid ""
+"CW 配置：WPM={wpm}，TONE={tone} Hz，DASH={dash} dit，Character "
+"Space={char_space} dit"
 msgstr ""
 
 #, python-brace-format
-msgid "CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz"
+msgid ""
+"CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz，DASH={dash} dit，"
+"Character Space={char_space} dit"
 msgstr ""
 
 #, python-brace-format
@@ -406,7 +418,7 @@ msgstr ""
 msgid "cal_centi_ppm 超出 ±{v0}"
 msgstr ""
 
-msgid "至少指定 --wpm 或 --tone 中的一项"
+msgid "至少指定 --wpm、--tone、--dash 或 --character-space 中的一项"
 msgstr ""
 
 #, python-brace-format
@@ -415,6 +427,14 @@ msgstr ""
 
 #, python-brace-format
 msgid "TONE 必须在 {min}..{max} Hz"
+msgstr ""
+
+#, python-brace-format
+msgid "DASH 必须是 {min}..{max} dit 的整数"
+msgstr ""
+
+#, python-brace-format
+msgid "Character Space 必须是 {min}..{max} dit 的整数"
 msgstr ""
 
 msgid "未发现 USB 串口：请用 --port 指定设备，或设置 TOTP_PORT 环境变量"

@@ -72,6 +72,8 @@ class FakeDevice:
         self.calib_centi_ppm = 0
         self.cw_wpm = protocol.CW_DEFAULT_WPM
         self.cw_tone_hz = protocol.CW_DEFAULT_TONE_HZ
+        self.cw_dash_dits = protocol.CW_DEFAULT_DASH_DITS
+        self.cw_char_space_dits = protocol.CW_DEFAULT_CHAR_SPACE_DITS
 
         self.silent = False
         self.drop_frames = 0
@@ -160,10 +162,11 @@ class FakeDevice:
             self.calib_centi_ppm = struct.unpack_from("<h", request.payload)[0]
             return struct.pack("<h", self.calib_centi_ppm)
         if request.cmd == protocol.Cmd.SET_CW:
-            self.cw_wpm, self.cw_tone_hz = struct.unpack("<BH", request.payload)
-            return struct.pack("<BH", self.cw_wpm, self.cw_tone_hz)
-        if request.cmd == protocol.Cmd.GET_CW:
-            return struct.pack("<BH", self.cw_wpm, self.cw_tone_hz)
+            (self.cw_wpm, self.cw_tone_hz,
+             self.cw_dash_dits, self.cw_char_space_dits) = struct.unpack("<BHBB", request.payload)
+        if request.cmd in (protocol.Cmd.GET_CW, protocol.Cmd.SET_CW):
+            return struct.pack("<BHBB", self.cw_wpm, self.cw_tone_hz,
+                               self.cw_dash_dits, self.cw_char_space_dits)
         raise AssertionError(f"仿真设备未实现命令 0x{request.cmd:02X}")
 
     def _crc(self) -> int:

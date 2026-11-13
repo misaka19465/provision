@@ -73,7 +73,8 @@ def _validate_set_calib(args: argparse.Namespace) -> None:
 
 
 def _validate_set_cw(args: argparse.Namespace) -> None:
-    protocol.validate_cw(wpm=args.wpm, tone_hz=args.tone_hz)
+    protocol.validate_cw(wpm=args.wpm, tone_hz=args.tone_hz,
+                         dash_dits=args.dash_dits, char_space_dits=args.char_space_dits)
 
 
 def _build_parser() -> argparse.ArgumentParser:
@@ -127,7 +128,7 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     calib.set_defaults(handler=commands.cmd_set_calib, validate=_validate_set_calib)
 
-    get_cw = sub.add_parser("get-cw", help=tr("读取可选 CW 播放参数（WPM / TONE）"))
+    get_cw = sub.add_parser("get-cw", help=tr("读取可选 CW 播放参数（WPM / TONE / DASH / Character Space）"))
     get_cw.set_defaults(handler=commands.cmd_get_cw)
 
     set_cw = sub.add_parser("set-cw", help=tr("保存可选 CW 播放参数，未指定的项保留当前值"))
@@ -139,6 +140,14 @@ def _build_parser() -> argparse.ArgumentParser:
                         help=tr("音调 {min}..{max} Hz，未配置时默认 {default}").format(
                             min=protocol.CW_TONE_MIN_HZ, max=protocol.CW_TONE_MAX_HZ,
                             default=protocol.CW_DEFAULT_TONE_HZ))
+    set_cw.add_argument("--dash", dest="dash_dits", type=int, metavar="DIT",
+                        help=tr("划时长 {min}..{max} dit（整数），未配置时默认 {default}").format(
+                            min=protocol.CW_DASH_MIN_DITS, max=protocol.CW_DASH_MAX_DITS,
+                            default=protocol.CW_DEFAULT_DASH_DITS))
+    set_cw.add_argument("--character-space", "--char-space", dest="char_space_dits", type=int, metavar="DIT",
+                        help=tr("字符间隔 {min}..{max} dit（整数），未配置时默认 {default}").format(
+                            min=protocol.CW_CHAR_SPACE_MIN_DITS, max=protocol.CW_CHAR_SPACE_MAX_DITS,
+                            default=protocol.CW_DEFAULT_CHAR_SPACE_DITS))
     set_cw.set_defaults(handler=commands.cmd_set_cw, validate=_validate_set_cw)
 
     setup = sub.add_parser(

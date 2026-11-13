@@ -217,16 +217,18 @@ def cmd_get_cw(device: Device, args: argparse.Namespace) -> int:
     """读取独立 CW 扩展参数；不支持时由设备错误或超时报告失败。"""
     _connect(device)
     config = device.get_cw()
-    print(tr("CW 配置：WPM={wpm}，TONE={tone} Hz").format(wpm=config.wpm, tone=config.tone_hz))
+    print(tr("CW 配置：WPM={wpm}，TONE={tone} Hz，DASH={dash} dit，Character Space={char_space} dit").format(
+        wpm=config.wpm, tone=config.tone_hz, dash=config.dash_dits, char_space=config.char_space_dits))
     return 0
 
 
 def cmd_set_cw(device: Device, args: argparse.Namespace) -> int:
     """保存至少一项 CW 参数并展示核验后的当前值，成功返回 0。"""
     _connect(device)
-    config = device.set_cw(wpm=args.wpm, tone_hz=args.tone_hz)
-    print(tr("CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz").format(
-        wpm=config.wpm, tone=config.tone_hz))
+    config = device.set_cw(wpm=args.wpm, tone_hz=args.tone_hz,
+                           dash_dits=args.dash_dits, char_space_dits=args.char_space_dits)
+    print(tr("CW 配置已保存并读回确认：WPM={wpm}，TONE={tone} Hz，DASH={dash} dit，Character Space={char_space} dit").format(
+        wpm=config.wpm, tone=config.tone_hz, dash=config.dash_dits, char_space=config.char_space_dits))
     return 0
 
 

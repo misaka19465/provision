@@ -30,15 +30,16 @@ python3 -m venv .venv
 
 ## 可选 CW 配置
 
-UV-K5 的 WPM / TONE 使用独立扩展命令，不要求配置；未配置时仍为 **8 WPM、700 Hz**。普通 `setup` 不发送扩展，也不会覆盖已经保存的播放参数。数显 `totp/` 设备返回 `ERR_UNSUPPORTED`。
+UV-K5 的 WPM / TONE / DASH / Character Space 使用独立扩展命令，不要求配置；未配置时为 **8 WPM、700 Hz、DASH 3 dit、Character Space 3 dit**。普通 `setup` 不发送扩展，也不会覆盖已经保存的播放参数。数显 `totp/` 设备返回 `ERR_UNSUPPORTED`。
 
 ```bash
 .venv/bin/python provision.py --port /dev/ttyUSB0 get-cw
 .venv/bin/python provision.py --port /dev/ttyUSB0 set-cw --wpm 12 --tone 900
+.venv/bin/python provision.py --port /dev/ttyUSB0 set-cw --dash 4 --character-space 7
 .venv/bin/python provision.py --port /dev/ttyUSB0 set-cw --tone 700
 ```
 
-WPM 支持 5–60，TONE 支持 300–1200 Hz。至少指定一项，未指定的一项保留当前值。配置在设备重启后保留；码速不能导致已保存的 TOTP 周期无法容纳完整 CW 帧。协议字段、错误语义和测试向量见 [可选 CW 播放配置扩展](docs/cw-protocol.md)。
+WPM 支持 5–60，TONE 支持 300–1200 Hz；DASH 时长和 Character Space 均支持 1–255 个整数 dit，默认均为 3 dit，1 dit 为 `floor(1200 / WPM)` 毫秒。Character Space 是两个字符之间的完整静音间隔，`--char-space` 为别名。至少指定一项，未指定项保留当前值。配置在设备重启后保留；码速和时序不能导致已保存的 TOTP 周期无法容纳完整 CW 帧。配置工具和固件需同步更新，统一使用完整五字节参数；旧 EEPROM CW 记录失效并恢复全部默认值，需重新配置播放参数。协议字段、错误语义和测试向量见 [可选 CW 播放配置扩展](docs/cw-protocol.md)。
 
 ## 测试
 
