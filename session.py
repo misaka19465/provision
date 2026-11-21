@@ -24,6 +24,8 @@ WAKE_ROUNDS = 3
 POLL_INTERVAL_S = 0.002
 READ_CHUNK = 64
 BAUD_RATE = 38400
+WRITE_CHUNK_BYTES = 4
+WRITE_CHUNK_GAP_S = 0.002
 
 
 class SerialLike(Protocol):
@@ -83,11 +85,23 @@ class SerialSession:
         if self._trace is not None:
             self._trace(message)
 
+    def _write_paced(self, data: bytes) -> None:
+        """分块写入长帧，给设备 UART 中断留出排空 FIFO 的时间。
+
+        NOTE: 实机验证显示整帧写入时，UV-K5 在约 18 B 后开始丢字节；
+              4 B 一块、块间 2 ms 可稳定接收 43 B 的 WRITE_SLOT 帧。
+        """
+        for start in range(0, len(data), WRITE_CHUNK_BYTES):
+            end = start + WRITE_CHUNK_BYTES
+            self._port.write(data[start:end])
+            if end < len(data):
+                time.sleep(WRITE_CHUNK_GAP_S)
+
     def _preamble(self) -> None:
         """4 B 前导码 + ≥20 ms 静默。"""
         self._log(tr("发送唤醒前导码（{v0}）+ {v1:.0f} ms 静默").format(v0=PREAMBLE.hex(' '), v1=PREAMBLE_SILENCE_S * 1000))
         self._port.reset_input_buffer()
-        self._port.write(PREAMBLE)
+        self._write_paced(PREAMBLE)
         time.sleep(PREAMBLE_SILENCE_S)
         self._last_activity = None
 
@@ -103,7 +117,7 @@ class SerialSession:
             self._log(tr("发送：WRITE_SLOT seq={v0}（种子载荷及 CRC 已隐藏）").format(v0=frame.seq))
         else:
             self._log(tr("发送：{v0}").format(v0=wire.hex(' ')))
-        self._port.write(wire)
+        self._write_paced(wire)
 
         deadline = time.monotonic() + timeout_s
         decoder = protocol.FrameDecoder()

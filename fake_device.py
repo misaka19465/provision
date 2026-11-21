@@ -22,11 +22,13 @@ class FakeSerial:
     def __init__(self, device: "FakeDevice") -> None:
         self.device = device
         self.written = bytearray()
+        self.writes: list[bytes] = []
         self.preamble_count = 0
         self.closed = False
         self._rx = bytearray()
 
     def write(self, data: bytes) -> int:
+        self.writes.append(bytes(data))
         self.written.extend(data)
         if bytes(data) == PREAMBLE:
             self.preamble_count += 1

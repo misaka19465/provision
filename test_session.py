@@ -84,6 +84,18 @@ class WakeTests(SessionTestBase):
 
 
 class RequestTests(SessionTestBase):
+    def test_long_frame_is_sent_in_device_safe_chunks(self) -> None:
+        model, port, sess = make_session()
+        self.assertIsNotNone(sess.wake())
+        port.writes.clear()
+
+        frame = protocol.write_slot(sess.next_seq(), secret="JBSWY3DPEHPK3PXP")
+        status, _ = sess.request(frame)
+
+        self.assertEqual(status, protocol.Status.OK)
+        self.assertEqual(b"".join(port.writes), protocol.encode(frame))
+        self.assertEqual(max(len(chunk) for chunk in port.writes), session.WRITE_CHUNK_BYTES)
+
     def test_verbose_trace_redacts_secret_payload_and_frame_crc(self) -> None:
         model = FakeDevice()
         port = FakeSerial(model)
